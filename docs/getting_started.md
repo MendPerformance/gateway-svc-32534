@@ -1,0 +1,120 @@
+---
+title: Getting Started
+description: AWS Lambda Cookbook Project Getting started
+---
+
+## **Prerequisites**
+
+!!! warning "Required Tools"
+    Make sure you have all prerequisites installed before proceeding.
+
+* **Docker** - install [Docker](https://www.docker.com/){:target="_blank" rel="noopener"}. Required for the Lambda layer packaging process.
+* **[AWS CDK](cdk.md)** - Required for synth & deploying the AWS Cloudformation stack. Run CDK [Bootstrap](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html) on your AWS account and region.
+* Python 3.14
+* [uv](https://docs.astral.sh/uv/){:target="_blank" rel="noopener"} - A fast Python package installer and resolver. Install with ``curl -LsSf https://astral.sh/uv/install.sh | sh`` or ``pip install uv``.
+
+!!! tip "Windows Users"
+    For Windows based machines, use the `Makefile_windows` version (rename to `Makefile`). Default Makefile is for Mac/Linux.
+
+## Getting Started
+
+You can start with a clean service out of this blueprint repository without using the 'Template' button on GitHub.
+
+!!! success "Recommended: Use Cookiecutter"
+    The fastest way to get started is using Cookiecutter to generate a customized project.
+
+* Cookiecutter - install with pip/brew ``brew install cookiecutter`` or ``pip install cookiecutter`
+
+Then run:
+
+```bash
+cookiecutter gh:ran-isenberg/cookiecutter-serverless-python
+```
+
+Answer the questions to select repo name, service name, etc.:
+
+![logo](https://github.com/ran-isenberg/cookiecutter-serverless-python/blob/main/media/howto.png?raw=true)
+
+**That's it, your developer environment has been set! you are ready to deploy the service:**
+
+```bash
+cd {new repo folder}
+make dev
+make deploy
+```
+
+## **Creating a Developer Environment (without cookiecutter)**
+
+1. Run ``make dev``
+
+## **Deploy CDK**
+
+Create a cloudformation stack by running ``make deploy``.
+
+!!! info "First Deployment"
+    The first deployment may take 5-10 minutes as CDK provisions all resources.
+
+## **Unit Tests**
+
+Unit tests can be found under the ``tests/unit`` folder.
+
+You can run the tests by using the following command: ``make unit``.
+
+## **Integration Tests**
+
+!!! warning "Deploy First"
+    Make sure you deploy the stack first as these tests trigger your Lambda handler LOCALLY but communicate with AWS services.
+
+These tests allow you to debug in your IDE your AWS Lambda function.
+
+Integration tests can be found under the ``tests/integration`` folder.
+
+You can run the tests by using the following command: ``make integration``.
+
+## **E2E Tests**
+
+Make sure you deploy the stack first.
+
+E2E tests can be found under the ``tests/e2e`` folder.
+
+These tests send a 'POST' message to the deployed API GW and trigger the Lambda function on AWS.
+
+The tests are run automatically by: ``make e2e``.
+
+## **Deleting the stack**
+
+CDK destroy can be run with ``make destroy``.
+
+## **Preparing Code for PR**
+
+Run ``make pr``. This command will run all the required checks, pre commit hooks, linters, code formatters, import sorting and tests, so you can be sure GitHub's pipeline will pass. It will also generate an updated swagger OpenAPI JSON file and place it at docs/swagger/openapi.json location.
+
+The command auto fixes errors in the code for you.
+
+If there's an error in the pre-commit stage, it gets auto fixed. However, are required to run ``make pr`` again so it continues to the next stages.
+
+Be sure to commit all the changes that ``make pr`` does for you.
+
+## **OpenAPI Swagger Generation**
+
+Run either ``make pr`` or ``make openapi`` to generate an updated swagger OpenAPI JSON file and place it at docs/swagger/openapi.json location.
+
+## **GitHub Pages Documentation**
+
+``make docs`` can be run to start a local HTTP server with the project's documentation pages.
+
+## **Building dev/lambda_requirements.txt**
+
+### lambda_requirements.txt
+
+CDK requires a requirements.txt in order to create a zip file with the Lambda layer dependencies. It's generated from the project's uv.lock file.
+
+``make deploy`` command will generate it automatically for you.
+
+### dev_requirements.txt
+
+This file is used during GitHub CI to install all the required Python libraries.
+
+File contents are created from the uv.lock file.
+
+``make deploy`` and ``make deps`` are commands that generate it automatically.
